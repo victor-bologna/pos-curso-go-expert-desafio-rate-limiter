@@ -48,7 +48,7 @@ func (rc *RedisClient) NextRequest(key string, maximumReq int, timeout int) (Sta
 		return Deny, err.Error()
 	}
 
-	if redisValue >= maximumReq {
+	if redisValue > maximumReq {
 		rc.client.Set(rc.ctx, key, redisValue, time.Duration(timeout)*time.Second).Result()
 		return Deny, "you have reached the maximum number of requests or actions allowed within a certain time frame"
 	}

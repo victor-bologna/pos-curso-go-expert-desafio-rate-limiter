@@ -17,7 +17,5 @@ func main() {
 	})
 
 	http.Handle("/", middleware.RateLimiterMiddleware(rc, myHandler))
-
-	// Start the server
 	http.ListenAndServe(":8080", nil)
 }

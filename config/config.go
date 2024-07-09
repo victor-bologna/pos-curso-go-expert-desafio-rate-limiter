@@ -14,9 +14,7 @@ type Config struct {
 	RedisPass       string
 	RedisDB         int
 	IPMaximumReq    int
-	IPTTL           int
 	TokenMaximumReq int
-	TokenTTL        int
 	Timeout         int
 }
 
@@ -25,7 +23,7 @@ var AppConfig Config
 func LoadConfig() {
 	pwd, err := os.Getwd()
 	if err != nil {
-		log.Print("Error getting current directory: %v", err)
+		log.Printf("Error getting current directory: %v", err)
 	}
 	err = godotenv.Load(filepath.Join(pwd, ".env"))
 	if err != nil {
@@ -34,28 +32,28 @@ func LoadConfig() {
 
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
-		log.Printf("Redis Addr is empty, converting to default value: redis:6379")
-		redisAddr = "redis:6379"
+		redisAddr = "localhost:6379"
+		log.Printf("Redis Addr is empty, converting to default value: %v", redisAddr)
 	}
 	redisDB, err := strconv.Atoi(os.Getenv("REDIS_DB"))
 	if err != nil {
-		log.Printf("Error converting REDIS_DB to integer: %v, converting to default value: 0", err)
 		redisDB = 0
+		log.Printf("Error converting REDIS_DB to integer: %v, converting to default value: %v", err, redisDB)
 	}
 	ipMaxReq, err := strconv.Atoi(os.Getenv("IP_MAX_REQ"))
 	if err != nil {
-		log.Printf("Error converting IP_MAX_REQ to integer: %v, converting to default value: 5", err)
 		ipMaxReq = 5
+		log.Printf("Error converting IP_MAX_REQ to integer: %v, converting to default value: %v", err, ipMaxReq)
 	}
 	tokenMaxReq, err := strconv.Atoi(os.Getenv("TOKEN_MAX_REQ"))
 	if err != nil {
-		log.Printf("Error converting TOKEN_MAX_REQ to integer: %v, converting to default value: 5", err)
 		tokenMaxReq = 5
+		log.Printf("Error converting TOKEN_MAX_REQ to integer: %v, converting to default value: %v", err, tokenMaxReq)
 	}
 	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
 	if err != nil {
-		log.Printf("Error converting TIMEOUT to integer: %v, converting to default value: 10", err)
 		timeout = 10
+		log.Printf("Error converting TIMEOUT to integer: %v, converting to default value: %v", err, timeout)
 	}
 
 	AppConfig = Config{
