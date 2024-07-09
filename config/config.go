@@ -14,18 +14,20 @@ type Config struct {
 	RedisPass       string
 	RedisDB         int
 	IPMaximumReq    int
+	IPTimeout       int
 	TokenMaximumReq int
-	Timeout         int
+	TokenTimeout    int
 }
 
 var AppConfig Config
 
-func LoadConfig() {
+func LoadConfig(path string) {
 	pwd, err := os.Getwd()
 	if err != nil {
 		log.Printf("Error getting current directory: %v", err)
 	}
-	err = godotenv.Load(filepath.Join(pwd, ".env"))
+	rootPath := filepath.Join(pwd, path)
+	err = godotenv.Load(filepath.Join(rootPath, ".env"))
 	if err != nil {
 		log.Printf("Error loading .env file: %v, using default values...", err)
 	}
@@ -50,10 +52,15 @@ func LoadConfig() {
 		tokenMaxReq = 5
 		log.Printf("Error converting TOKEN_MAX_REQ to integer: %v, converting to default value: %v", err, tokenMaxReq)
 	}
-	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
+	ipTimeout, err := strconv.Atoi(os.Getenv("IP_TIMEOUT"))
 	if err != nil {
-		timeout = 10
-		log.Printf("Error converting TIMEOUT to integer: %v, converting to default value: %v", err, timeout)
+		ipTimeout = 10
+		log.Printf("Error converting IP_TIMEOUT to integer: %v, converting to default value: %v", err, ipTimeout)
+	}
+	tokenTimeout, err := strconv.Atoi(os.Getenv("TOKEN_TIMEOUT"))
+	if err != nil {
+		tokenTimeout = 10
+		log.Printf("Error converting TOKEN_TIMEOUT to integer: %v, converting to default value: %v", err, tokenTimeout)
 	}
 
 	AppConfig = Config{
@@ -61,7 +68,8 @@ func LoadConfig() {
 		RedisPass:       os.Getenv("REDIS_PASS"),
 		RedisDB:         redisDB,
 		IPMaximumReq:    ipMaxReq,
+		IPTimeout:       ipTimeout,
 		TokenMaximumReq: tokenMaxReq,
-		Timeout:         timeout,
+		TokenTimeout:    tokenTimeout,
 	}
 }

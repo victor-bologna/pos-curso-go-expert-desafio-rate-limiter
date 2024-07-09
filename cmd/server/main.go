@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	config.LoadConfig()
+	config.LoadConfig("")
 	rc := limiter.NewRedisClient()
 
 	myHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

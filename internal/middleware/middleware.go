@@ -16,12 +16,16 @@ func RateLimiterMiddleware(rc limiter.RateLimiterStrategy, next http.Handler) ht
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("API_KEY")
 		maxReq := config.AppConfig.TokenMaximumReq
-		ttl := config.AppConfig.Timeout
+		timeout := config.AppConfig.TokenTimeout
+
 		if apiKey == "" {
 			apiKey = getIpAddress(r)
 			maxReq = config.AppConfig.IPMaximumReq
+			timeout = config.AppConfig.IPTimeout
 		}
-		state, message := rc.NextRequest(apiKey, maxReq, ttl)
+
+		state, message := rc.NextRequest(apiKey, maxReq, timeout)
+		
 		if state == limiter.Allow {
 			next.ServeHTTP(w, r)
 			return
