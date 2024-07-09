@@ -1,0 +1,21 @@
+services:
+  # Redis
+  redis:
+    container_name: "redis"
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - rate-limiter
+  # Rate Limiter
+  rate-limiter:
+    container_name: rate-limiter
+    restart: always
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - rate-limiter
+networks:
+  rate-limiter:
