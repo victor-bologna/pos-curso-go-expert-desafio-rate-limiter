@@ -17,7 +17,8 @@ FROM alpine:latest
 WORKDIR /root/
 
 COPY --from=build-stage /app/rate-limiter .
+COPY --from=build-stage /app/.env .
 
-EXPOSE 8081
+EXPOSE 8080
 
 CMD ["./rate-limiter"]

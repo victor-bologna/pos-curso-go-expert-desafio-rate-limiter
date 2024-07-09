@@ -16,7 +16,6 @@ const (
 	Allow State = true
 )
 
-
 type RedisClient struct {
 	client *redis.Client
 	ctx    context.Context
@@ -35,23 +34,25 @@ func NewRedisClient() *RedisClient {
 	}
 }
 
-func (rc *RedisClient) NextRequest(key string, maximumReq int, timeout int) State {
+func (rc *RedisClient) NextRequest(key string, maximumReq int, timeout int) (State, string) {
 	redisValue, err := rc.client.Get(rc.ctx, key).Int()
 	fmt.Println("---------------------------------------------------------------------------")
 	fmt.Println("log -> key:", key)
 	fmt.Println("log -> redisValue:", redisValue)
 
-	if err != nil || redisValue >= maximumReq {
+	if err != nil {
 		if err == redis.Nil {
-			fmt.Println("log -> Nova chave")
 			rc.client.Set(rc.ctx, key, 1, time.Second).Result()
-			return Allow
+			return Allow, ""
 		}
-		fmt.Println("log -> Timeout:", timeout)
+		return Deny, err.Error()
+	}
+
+	if redisValue >= maximumReq {
 		rc.client.Set(rc.ctx, key, redisValue, time.Duration(timeout)*time.Second).Result()
-		return Deny
+		return Deny, "you have reached the maximum number of requests or actions allowed within a certain time frame"
 	}
 
 	rc.client.Incr(rc.ctx, key).Result()
-	return Allow
+	return Allow, ""
 }
